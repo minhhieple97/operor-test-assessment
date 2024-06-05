@@ -6,6 +6,7 @@
 
 generator client {
   provider = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
 }
 
 datasource db {
@@ -13,24 +14,28 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Users {
-  id         Int       @id @default(autoincrement())
-  first_name String
-  last_name  String
-  email      String
+model User {
+  id         Int      @id @default(autoincrement())
+  firstName  String
+  lastName   String
+  email      String   @unique
   gender     String
-  ip_address String
+  ipAddress  String
   days       Int
-  created_at DateTime  @default(now())
-  Meetings   Meetings[]
+  createdAt  DateTime @default(now())
+  meetings   Meeting[]
 }
 
-model Meetings {
-  id       Int     @id @default(autoincrement())
-  user_id  Int
-  room_id  Int
-  start_day Int
-  end_day   Int
-  created_at DateTime @default(now())
-  User     Users   @relation(fields: [user_id], references: [id])
+model Meeting {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  roomId    Int
+  startDay  Int
+  endDay    Int
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([roomId])
 }
